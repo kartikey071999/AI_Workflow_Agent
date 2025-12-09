@@ -1,6 +1,7 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
 from pathlib import Path
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -34,9 +35,7 @@ class Settings(BaseSettings):
     # Pydantic Config
     # ------------------------
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
     def create_directories(self):
@@ -46,5 +45,3 @@ class Settings(BaseSettings):
         This is where PDF reports will be saved.
         """
         Path(self.report_output_dir).mkdir(parents=True, exist_ok=True)
-
-

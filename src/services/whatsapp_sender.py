@@ -2,11 +2,13 @@
 WhatsApp Sender Service
 Sends messages and files via Twilio WhatsApp API
 """
+
 import logging
 from pathlib import Path
-from typing import Optional
-from twilio.rest import Client
+
 from twilio.base.exceptions import TwilioRestException
+from twilio.rest import Client
+
 from src.config import settings
 
 logger = logging.getLogger(__name__)
@@ -17,10 +19,7 @@ class WhatsAppSender:
 
     def __init__(self):
         """Initialize Twilio client with credentials from settings."""
-        self.client = Client(
-            settings.twilio_account_sid,
-            settings.twilio_auth_token
-        )
+        self.client = Client(settings.twilio_account_sid, settings.twilio_auth_token)
 
         # Ensure numbers contain ONLY digits and + prefix
         self.from_number = f"whatsapp:{settings.twilio_whatsapp_number}"
@@ -32,7 +31,7 @@ class WhatsAppSender:
         self,
         message: str = None,
         content_sid: str = None,
-        content_variables: dict = None
+        content_variables: dict = None,
     ) -> bool:
         """
         Send a WhatsApp message using text or a Twilio Content Template.
@@ -46,11 +45,12 @@ class WhatsAppSender:
                 payload = {
                     "from_": self.from_number,
                     "to": self.to_number,
-                    "content_sid": content_sid
+                    "content_sid": content_sid,
                 }
 
                 if content_variables:
                     from json import dumps
+
                     payload["content_variables"] = dumps(content_variables)
 
             else:
@@ -60,7 +60,7 @@ class WhatsAppSender:
                 payload = {
                     "from_": self.from_number,
                     "to": self.to_number,
-                    "body": message
+                    "body": message,
                 }
 
             response = self.client.messages.create(**payload)
@@ -69,14 +69,14 @@ class WhatsAppSender:
             return True
 
         except TwilioRestException as e:
-            logger.error(f"Failed to send WhatsApp message: {e}") 
+            logger.error(f"Failed to send WhatsApp message: {e}")
             return False
 
         except Exception as e:
             logger.error(f"Unexpected error sending WhatsApp message: {e}")
             return False
 
-    def send_file(self, file_path: str, caption: Optional[str] = None) -> bool:
+    def send_file(self, file_path: str, caption: str | None = None) -> bool:
         """
         Send a file via WhatsApp using a caption and media_url.
         """

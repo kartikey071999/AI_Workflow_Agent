@@ -171,7 +171,7 @@ class PerplexityClient:
         ic(billing_payload)
         return billing_payload
 
-
+from src.senders import TelegramClient
 if __name__ == "__main__":
     client = PerplexityClient()
 
@@ -182,9 +182,10 @@ if __name__ == "__main__":
     print(f"Date: {datetime.now().strftime('%B %d, %Y')}")
     print("=" * 80)
     print()
-
+    telegram_client = TelegramClient()
     for topic in topics:
         print(f"\n{'=' * 80}")
         update = client.get_daily_update(topic)
+        telegram_client.send(f"**Daily Update on {topic}:**\n\n{update['response']}")
         print(update)
         print()

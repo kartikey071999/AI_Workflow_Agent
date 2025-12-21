@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     twilio_whatsapp_number: str = Field(..., alias="TWILIO_WHATSAPP_NUMBER")
     my_whatsapp_number: str = Field(..., alias="MY_WHATSAPP_NUMBER")
 
+    telegram_bot_token: str = Field(..., alias="TELEGRAM_BOT_TOKEN")
+    telegram_chat_id: str = Field(..., alias="TELEGRAM_CHAT_ID")
+
     # ------------------------
     # FILE / REPORT CONFIG
     # ------------------------

@@ -1,13 +1,44 @@
+## Local Lint & Format Pipeline
+
+You can run code quality checks locally at any time. This is optional and does not run automatically—it's for developer convenience.
+
+### One-liner (using Makefile)
+
+```powershell
+make check
+```
+
+Or run manually:
+
+```powershell
+ruff check src/
+black --check src/
+```
+
+To auto-format with black:
+
+```powershell
+black src/
+```
+
+> **Tip:** These checks are fast and only run if you choose to. No CI/CD or pre-commit hooks are enforced by default.
+
+
 # AI Workflow Agent
 
-Automated workflow for collecting AI news, summarizing content, generating PDF reports, and sending them via WhatsApp.
+Automated workflow for collecting AI news, summarizing content, and sending updates via Telegram (primary) and WhatsApp (optional). Designed for scheduled GitHub Actions pipeline runs, but can be run locally for development and testing.
 
 ## Features
 
-- 📰 **AI News Collection** - Fetch latest AI news using Perplexity API
-- 🤖 **Smart Summarization** - Summarize content with OpenAI/Gemini
-- 📄 **PDF Generation** - Create professional PDF reports
-- 📱 **WhatsApp Delivery** - Send reports via Twilio WhatsApp API
+- 📰 **AI News Collection** - Fetches the latest AI news using Perplexity API
+- 🤖 **Summarization** - (Stub/optional) Summarize content with OpenAI/Gemini
+- 📄 **PDF Generation** - (Stub/optional) Generate PDF reports (not active by default)
+- 📲 **Telegram Delivery** - Send updates via Telegram bot (robust, error-handled)
+- 📱 **WhatsApp Delivery** - (Optional) Send messages via Twilio WhatsApp API
+- ⏰ **Automated Pipeline** - Runs as a scheduled GitHub Actions cron job (see .github/workflows/daily-tech-updates.yml)
+- 🧑‍💻 **Local Dev Tools** - Fast, optional ruff/black checks via Makefile
+
+> **Note:** Some features (PDF, WhatsApp, Summarizer) are present but not actively maintained or may be stubbed. Telegram and pipeline delivery are the main focus.
 
 ## Setup Instructions
 
@@ -58,34 +89,46 @@ Required API keys:
 - **Twilio Account SID & Auth Token** - Get from https://www.twilio.com/console
 - **Twilio WhatsApp Number** - Set up at https://www.twilio.com/console/sms/whatsapp/sandbox
 
-### 5. Run the Application
+
+### 5. Run the Application (Locally or in CI)
 
 ```powershell
 # Make sure virtual environment is activated
 python src/main.py
 ```
 
+Or let the GitHub Actions pipeline run it automatically on schedule (see .github/workflows/daily-tech-updates.yml).
+
+
 ## Project Structure
 
 ```
 AI_Workflow_Agent/
 ├── src/
-│   ├── main.py                    # Main application entry point
+│   ├── main.py                    # Main pipeline entry point (Telegram, cron)
 │   ├── config/
 │   │   └── settings.py            # Configuration and environment variables
+│   ├── senders/
+│   │   └── telegram.py            # Telegram client (robust)
 │   ├── services/
 │   │   ├── collect_ai_news.py     # AI news collection service
-│   │   ├── summarizer.py          # Content summarization service
-│   │   ├── pdf_generator.py       # PDF report generation
-│   │   └── whatsapp_sender.py     # WhatsApp messaging service
+│   │   ├── summarizer.py          # (Stub/optional)
+│   │   ├── pdf_generator.py       # (Stub/optional)
+│   │   └── whatsapp_sender.py     # WhatsApp messaging service (optional)
 │   └── utils/
 │       └── logger.py              # Logging utilities
-├── reports/                       # Generated PDF reports
-├── .env                          # Environment variables (not in git)
-├── .env.example                  # Example environment file
-├── pyproject.toml                # Project dependencies
-└── README.md                     # This file
+├── jobs/                          # (Reserved for future jobs)
+├── reports/                       # (Optional) Generated PDF reports
+├── .env                           # Environment variables (not in git)
+├── .env.example                   # Example environment file
+├── Makefile                       # Local dev lint/format commands
+├── pyproject.toml                 # Project dependencies & config
+├── .github/
+│   └── workflows/
+│       └── daily-tech-updates.yml # GitHub Actions pipeline (cron job)
+└── README.md                      # This file
 ```
+
 
 ## Quick Start with uv
 
@@ -100,7 +143,8 @@ Then edit `.env` with your API keys and run:
 python src/main.py
 ```
 
-## Development
+
+## Development & Local Checks
 
 ### Install Dev Dependencies
 
@@ -108,23 +152,30 @@ python src/main.py
 uv pip install -e ".[dev]"
 ```
 
-### Code Formatting
+### Lint & Format (Optional, Fast)
 
 ```powershell
-black src/
+make check   # ruff + black --check
+make format  # auto-format with black
 ```
 
-### Linting
+Or run manually:
 
 ```powershell
 ruff check src/
+black --check src/
 ```
 
-### Type Checking
+### Type Checking (Optional)
 
 ```powershell
 mypy src/
 ```
+
+
+## GitHub Actions Pipeline
+
+The project is designed to run as a scheduled pipeline (see .github/workflows/daily-tech-updates.yml). All secrets should be uploaded to GitHub Secrets. The pipeline will fail if any topic fails to process.
 
 ## Troubleshooting
 

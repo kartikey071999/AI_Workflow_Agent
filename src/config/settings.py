@@ -5,6 +5,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    
+    # ------------------------
+    # TOPICS CONFIG
+    # ------------------------
+    topics: list[str] = Field(..., alias="TOPICS")
     # ------------------------
     # API KEYS
     # ------------------------
@@ -38,7 +43,10 @@ class Settings(BaseSettings):
     # Pydantic Config
     # ------------------------
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        json_loads_kwargs={"strict": False},
     )
 
     def create_directories(self):

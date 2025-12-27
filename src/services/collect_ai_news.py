@@ -87,7 +87,7 @@ class PerplexityClient:
 
             Task:
             - Output ONLY 3–6 bullet points
-            - Each point must describe a REAL, CONCRETE update from today
+            - Each point must describe a REAL, CONCRETE update in the tech world related to {topic}.
             - Focus ONLY on:
             • New version releases
             • Security patches
@@ -106,14 +106,12 @@ class PerplexityClient:
             - ONE line per bullet
 
             Required Output Format (STRICT):
-            • <Product/Framework> <version or event> — <what changed>
+            • <Product/Framework> <version or event> — <what changed> - <important detail or impact>
 
             Example:
             • FastAPI 0.111 released — adds HTTP/3 support
             • Python 3.14 beta 2 released — improves JIT compilation
-
-            If there are NO real updates today, output ONLY:
-            "No real updates for {current_date}"
+    "
             """
         ).strip()
 
@@ -171,21 +169,5 @@ class PerplexityClient:
         ic(billing_payload)
         return billing_payload
 
-from src.senders import TelegramClient
-if __name__ == "__main__":
-    client = PerplexityClient()
-
-    topics = ["GenAI (Generative AI)", "Agentic AI", "FastAPI", "Python"]
-
-    print("=" * 80)
-    print("DAILY TECH UPDATES")
-    print(f"Date: {datetime.now().strftime('%B %d, %Y')}")
-    print("=" * 80)
-    print()
-    telegram_client = TelegramClient()
-    for topic in topics:
-        print(f"\n{'=' * 80}")
-        update = client.get_daily_update(topic)
-        telegram_client.send(f"**Daily Update on {topic}:**\n\n{update['response']}")
-        print(update)
-        print()
+u = PerplexityClient()
+print(u.get_daily_update("GenAI (Generative AI)"))

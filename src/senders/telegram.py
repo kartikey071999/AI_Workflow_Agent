@@ -27,18 +27,14 @@ class TelegramClient:
         }
 
         try:
-            response = requests.post(
-                url, json=payload, timeout=self.timeout
-            )
+            response = requests.post(url, json=payload, timeout=self.timeout)
             response.raise_for_status()
 
         except requests.exceptions.Timeout as exc:
             raise TelegramSendError("Telegram API request timed out") from exc
 
         except requests.exceptions.RequestException as exc:
-            raise TelegramSendError(
-                f"Telegram API request failed: {exc}"
-            ) from exc
+            raise TelegramSendError(f"Telegram API request failed: {exc}") from exc
 
         # Telegram returns 200 even for logical errors
         data = response.json()

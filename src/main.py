@@ -15,7 +15,7 @@ def format_update_for_telegram(topic: str, response: str, citations: list[str]) 
         if not line:
             continue
 
-        # Remove citation markers like [1][4][5]
+        # Remove inline citation markers like [1][4][5]
         line = re.sub(r"\[\d+\]", "", line)
 
         # Ensure line ends with a full stop
@@ -24,14 +24,15 @@ def format_update_for_telegram(topic: str, response: str, citations: list[str]) 
 
         cleaned_lines.append(line)
 
-    # Format citations nicely
+    # Proper citation list (non-lossy)
     formatted_sources = []
     for i, url in enumerate(citations, start=1):
-        domain = urlparse(url).netloc.replace("www.", "")
-        formatted_sources.append(f"{i}. {domain}")
+        parsed = urlparse(url)
+        label = parsed.netloc.replace("www.", "")
+        formatted_sources.append(f"{i}. [{label}]({url})")
 
     message = (
-        f"**📰 Daily Update on {topic}**\n\n"
+        f"**📰 Weekly Tech Update on {topic}**\n\n"
         + "\n\n".join(cleaned_lines)
         + "\n\n📚 **Sources:**\n"
         + "\n".join(formatted_sources)

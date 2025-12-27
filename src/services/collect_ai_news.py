@@ -180,7 +180,6 @@ class PerplexityClient:
             {"role": "user", "content": user_prompt},
         ]
 
-
     def _parse_response(self, result: dict[str, Any]) -> dict[str, Any]:
         """
         Breaks API response into:
@@ -219,4 +218,3 @@ class PerplexityClient:
         }
         ic(billing_payload)
         return billing_payload
-

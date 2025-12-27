@@ -1,12 +1,9 @@
-
-
-from src.senders import TelegramClient
-from src.services.collect_ai_news import PerplexityClient
-from src.config import settings
-from datetime import datetime
-
 import re
 from urllib.parse import urlparse
+
+from src.config import settings
+from src.senders import TelegramClient
+from src.services.collect_ai_news import PerplexityClient
 
 
 def format_update_for_telegram(topic: str, response: str, citations: list[str]) -> str:
@@ -47,8 +44,10 @@ def get_topics():
     # Use topics from settings (config module)
     return settings.topics
 
+
 if __name__ == "__main__":
     import sys
+
     client = PerplexityClient()
     topics = get_topics()
 
@@ -57,7 +56,9 @@ if __name__ == "__main__":
     for topic in topics:
         try:
             update = client.get_update(topic)
-            msg = format_update_for_telegram(topic, update["response"], update["citations"])
+            msg = format_update_for_telegram(
+                topic, update["response"], update["citations"]
+            )
             telegram_client.send(msg)
         except Exception as e:
             error_msg = f"::error title=Failed for topic::{topic} error={e}"

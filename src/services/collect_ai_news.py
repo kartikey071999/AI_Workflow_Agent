@@ -33,7 +33,7 @@ class PerplexityClient:
     # ✅ PUBLIC METHOD
     # ============================
 
-    def get_daily_update(
+    def get_update(
         self, topic: str, max_tokens: int = 150, temperature: float = 0.3
     ) -> dict[str, Any]:
         """
@@ -43,7 +43,7 @@ class PerplexityClient:
             "citations": [...]
         }
         """
-        prompt_messages = self._build_prompt(topic)
+        prompt_messages = self._build_weekly_prompt(topic)
 
         payload = {
             "model": "sonar",
@@ -73,7 +73,7 @@ class PerplexityClient:
     # 🔒 PRIVATE: PROMPT BUILDER
     # ============================
 
-    def _build_prompt(self, topic: str) -> list[dict[str, str]]:
+    def _build_daily_prompt(self, topic: str) -> list[dict[str, str]]:
         """
         Private function to build prompt.
         Currently hardcoded as requested.
@@ -126,9 +126,60 @@ class PerplexityClient:
             {"role": "user", "content": user_prompt},
         ]
 
-    # ============================
-    # 🔒 PRIVATE: RESPONSE PARSER
-    # ============================
+    def _build_weekly_prompt(self, topic: str) -> list[dict[str, str]]:
+        """
+        Builds a strict weekly changelog prompt.
+        """
+        today = datetime.now()
+        week_range = f"{(today).strftime('%B %d, %Y')} (last 7 days)"
+
+        system_prompt = textwrap.dedent(
+            f"""
+            You are a strict WEEKLY tech change-log generator.
+            Time window: LAST 8 DAYS.
+            Reference date: {week_range}.
+
+            Task:
+            - Output ONLY 5–8 bullet points
+            - Each point must be a REAL, CONFIRMED event from the last week
+            - Focus ONLY on HIGH-IMPACT updates related to {topic}
+
+            Allowed categories:
+            • Major version releases
+            • Security patches / CVEs
+            • Large feature rollouts
+            • Acquisitions, funding, shutdowns
+            • Breaking infrastructure or policy changes
+
+            HARD RULES:
+            - NO opinions
+            - NO analysis
+            - NO speculation
+            - NO history
+            - NO marketing language
+            - NO repeated events
+            - ONE update per bullet
+            - ONE line per bullet
+
+            Required Output Format (STRICT):
+            • <Product/Framework> <version or event> — <what changed> - <impact or constraint>
+
+            Example:
+            • Python 3.13.1 released — fixes multiple security vulnerabilities - affects stdlib SSL
+            • OpenAI policy update — changes data retention rules - impacts enterprise APIs
+            """
+        ).strip()
+
+        user_prompt = f"""
+        List the most important and verifiable developments from the last 7 days in {topic}.
+        Include sources.
+        """.strip()
+
+        return [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
 
     def _parse_response(self, result: dict[str, Any]) -> dict[str, Any]:
         """
@@ -169,5 +220,3 @@ class PerplexityClient:
         ic(billing_payload)
         return billing_payload
 
-u = PerplexityClient()
-print(u.get_daily_update("GenAI (Generative AI)"))

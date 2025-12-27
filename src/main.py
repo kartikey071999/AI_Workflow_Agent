@@ -56,7 +56,7 @@ if __name__ == "__main__":
     errors = []
     for topic in topics:
         try:
-            update = client.get_daily_update(topic)
+            update = client.get_update(topic)
             msg = format_update_for_telegram(topic, update["response"], update["citations"])
             telegram_client.send(msg)
         except Exception as e:

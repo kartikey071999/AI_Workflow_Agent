@@ -1,6 +1,6 @@
 check:
-	ruff check src/
-	black --check src/
+	ruff check . --fix
+	black --check .
 
 format:
-	black src/
+	black .

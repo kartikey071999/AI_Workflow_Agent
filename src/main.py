@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 
 from src.config import settings
 from src.senders import TelegramClient
-from src.services.collect_ai_news import PerplexityClient
+from src.services import PerplexityClient
 
 
 def format_update_for_telegram(topic: str, response: str, citations: list[str]) -> str:
